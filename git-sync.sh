@@ -1,4 +1,17 @@
 #!/bin/bash
+#==============================================================================
+# Script Name: github-sync.sh
+# Description: This script syncs the projects under /scripts
+# Author: Michael Bolanos
+# Company: offthegridit
+# Website: https://github.com/michaelbolanos/github-sync
+# Version: 1.0
+# License: MIT
+#==============================================================================
+# Usage: Run this script with sudo privileges.
+#==============================================================================
+
+#!/bin/bash
 
 DEFAULT_DIR=~/scripts
 BRANCH="main"
