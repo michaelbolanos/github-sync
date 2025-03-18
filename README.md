@@ -82,15 +82,9 @@ Once resolved, re-run the script to complete the sync process.
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Author
-
-- **Michael Bolanos**  
-  [GitHub](https://github.com/michaelbolanos)  
-  [Website](https://github.com/michaelbolanos/github-sync)
-
 ## Contributions
 
-Contributions are welcome! Feel free to fork the repo and submit pull requests.
+Contributions are welcome.  Feel free to fork the repo and submit pull requests.
 
 ---
 
