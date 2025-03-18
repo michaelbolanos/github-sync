@@ -8,21 +8,21 @@
 
 ## 🚀 Features
 
-- 📂 **Automatic Repository Discovery:** Scans the specified directory for Git repositories.
-- ⏳ **Interactive Selection with Timeout:** Prompts the user to select a repository within 14 seconds, defaulting to `~/scripts`.
-- 🔄 **Automated Syncing:** Fetches the latest changes, handles stashing of local modifications, and rebases changes from GitHub.
-- 🛠 **Conflict Handling:** Detects merge conflicts and prompts the user to resolve them manually.
-- 📌 **Auto-Commit & Push:** Stages and commits any new changes before pushing them to the remote repository.
-- 🔒 **Error Handling:** Provides meaningful feedback in case of invalid selections or Git errors.
+- **Automatic Repository Discovery:** Scans the specified directory for Git repositories.
+- **Interactive Selection with Timeout:** Prompts the user to select a repository within 14 seconds, defaulting to `~/scripts`.
+- **Automated Syncing:** Fetches the latest changes, handles stashing of local modifications, and rebases changes from GitHub.
+- **Conflict Handling:** Detects merge conflicts and prompts the user to resolve them manually.
+- **Auto-Commit & Push:** Stages and commits any new changes before pushing them to the remote repository.
+- **Error Handling:** Provides meaningful feedback in case of invalid selections or Git errors.
 
 ## 🏗 Prerequisites
 
 Ensure you have the following installed on your system:
 
-- 🐧 **Linux/macOS** (Compatible Bash environment)
+- **Linux/macOS** (Compatible Bash environment)
 - 🔧 **Git** (Ensure you have SSH authentication set up for GitHub)
 
-## 📥 Installation
+## Installation
 
 1. **Clone the Repository:**
    ```bash
@@ -41,7 +41,7 @@ Ensure you have the following installed on your system:
    github-sync
    ```
 
-## 🔄 Usage
+## Usage
 
 Run the script with:
 ```bash
@@ -85,14 +85,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👤 Author
 
 - **Michael Bolanos**  
-  🚀 [GitHub](https://github.com/michaelbolanos)  
-  🌐 [Website](https://github.com/michaelbolanos/github-sync)
+  [GitHub](https://github.com/michaelbolanos)  
+  [Website](https://github.com/michaelbolanos/github-sync)
 
-## 🤝 Contributions
+## Contributions
 
 Contributions are welcome! Feel free to fork the repo and submit pull requests.
 
 ---
 
-🚀 **Keep your repositories in sync effortlessly!**
+**Keep your repositories in sync**
 
