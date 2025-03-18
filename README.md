@@ -63,7 +63,7 @@ github-sync
    - Stages, commits, and pushes any new local changes.
 4. **Completion message** confirming a successful sync or warning of conflicts if they arise.
 
-## ⚠️ Handling Merge Conflicts
+## Handling Merge Conflicts
 
 If a merge conflict occurs, the script will notify you:
 
@@ -78,11 +78,11 @@ git rebase --continue
 ```
 Once resolved, re-run the script to complete the sync process.
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👤 Author
+## Author
 
 - **Michael Bolanos**  
   [GitHub](https://github.com/michaelbolanos)  
