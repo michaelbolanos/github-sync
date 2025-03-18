@@ -5,13 +5,12 @@
 # Author: Michael Bolanos
 # Company: offthegridit
 # Website: https://github.com/michaelbolanos/github-sync
-# Version: 1.1
+# Version: 1.2
 # License: MIT
 #==============================================================================
 # Usage: Run this script with sudo privileges.
 #==============================================================================
 
-#!/bin/bash
 
 DEFAULT_DIR=~/scripts
 BRANCH="main"
