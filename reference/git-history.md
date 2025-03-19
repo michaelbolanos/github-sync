@@ -1,4 +1,4 @@
-# Git Branching & Merging: A Comprehensive Guide
+# Git Branching & Merging
 
 ## 🔍 History & Context of Git and GitHub
 
