@@ -1,8 +1,8 @@
 # Git Branching & Merging
 
-## 🔍 History & Context of Git and GitHub
+## History & Context of Git and GitHub
 
-### 📜 Git: The Foundation of Modern Version Control
+### Git: The Foundation of Modern Version Control
 Git is a distributed version control system (VCS) created by **Linus Torvalds** in 2005. It was developed as a **fast, scalable, and decentralized** system to manage the Linux kernel's massive codebase. Before Git, the Linux community relied on **BitKeeper**, a proprietary VCS, which was later revoked, prompting Torvalds to develop a **free, open-source** alternative.
 
 #### Key Features of Git:
