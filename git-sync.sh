@@ -1,104 +1,67 @@
 #!/bin/bash
-#==============================================================================
-# Script Name: github-sync.sh
-# Description: This script syncs the projects under /scripts
-# Author: Michael Bolanos
-# Company: offthegridit
-# Website: https://github.com/michaelbolanos/github-sync
-# Version: 1.3
-# License: MIT
-#==============================================================================
-# Usage: Run this script with sudo privileges.
-#==============================================================================
+# Enhanced GitHub Sync Script
+# Automates Git repository synchronization with logging, error handling, and batch processing
 
+LOG_FILE=~/scripts/github-sync.log
+BACKUP_DIR=~/scripts/backups
+SYNC_DIR=~/scripts
 
-DEFAULT_DIR=~/scripts
-BRANCH="main"
-TIMEOUT=14  # Timeout duration in seconds
+# Ensure backup directory exists
+mkdir -p "$BACKUP_DIR"
 
-# Prompt user to select a directory with a 14-second timeout
-echo "📂 Enter the directory to scan for repositories (default: $DEFAULT_DIR)"
-echo "⏳ If no input is provided, it will default in $TIMEOUT seconds..."
-read -t "$TIMEOUT" -rp "Or press Enter to use default: " SCRIPTS_DIR
+# Function to sync a single repository
+sync_repo() {
+    local repo_dir=$1
+    cd "$repo_dir" || return
+    echo "Syncing $repo_dir..." | tee -a "$LOG_FILE"
+    tar -czf "$BACKUP_DIR/$(basename $repo_dir)-backup-$(date +%F).tar.gz" .
+    git fetch --all 2>&1 | tee -a "$LOG_FILE"
+    git stash 2>&1 | tee -a "$LOG_FILE"
+    git pull --rebase 2>&1 | tee -a "$LOG_FILE"
+    git stash pop 2>&1 | tee -a "$LOG_FILE"
+    git add . 2>&1 | tee -a "$LOG_FILE"
+    git commit -m "Auto-sync update" 2>&1 | tee -a "$LOG_FILE"
+    git push 2>&1 | tee -a "$LOG_FILE"
+    echo "Sync completed for $repo_dir" | tee -a "$LOG_FILE"
+}
 
-# Use default if input is empty or timed out
-SCRIPTS_DIR=${SCRIPTS_DIR:-$DEFAULT_DIR}
+# Function to sync all repositories
+sync_all_repos() {
+    for repo in "$SYNC_DIR"/*/.git; do
+        repo_dir=$(dirname "$repo")
+        sync_repo "$repo_dir"
+    done
+}
 
-# Expand ~ to full home path in case of manual entry
-SCRIPTS_DIR=$(eval echo "$SCRIPTS_DIR")
+# Function to check if SSH key exists
+check_ssh_key() {
+    if [ ! -f ~/.ssh/id_rsa ]; then
+        echo "No SSH key found! Set up SSH for GitHub first." | tee -a "$LOG_FILE"
+        exit 1
+    fi
+}
 
-# Validate directory
-if [ ! -d "$SCRIPTS_DIR" ]; then
-    echo "❌ Directory does not exist: $SCRIPTS_DIR"
-    exit 1
-fi
-
-# Find all directories that contain a .git folder
-REPOS=($(find "$SCRIPTS_DIR" -type d -name ".git" -prune | sed 's|/.git||g'))
-
-if [ ${#REPOS[@]} -eq 0 ]; then
-    echo "❌ No Git repositories found under $SCRIPTS_DIR"
-    exit 1
-fi
-
-# Display the list of repositories
-echo "📂 Select a repository to sync:"
-for i in "${!REPOS[@]}"; do
-    echo "$((i+1))) ${REPOS[$i]}"
+# Interactive menu
+echo "Select an option:"
+options=("Sync All" "Sync One Repo" "View Log" "Exit")
+select opt in "${options[@]}"; do
+    case $opt in
+        "Sync All")
+            sync_all_repos
+            ;;
+        "Sync One Repo")
+            echo "Enter repository path:"
+            read -r repo_path
+            sync_repo "$repo_path"
+            ;;
+        "View Log")
+            cat "$LOG_FILE"
+            ;;
+        "Exit")
+            break
+            ;;
+        *)
+            echo "Invalid option!"
+            ;;
+    esac
 done
-
-# Get user selection
-read -rp "Enter the number of the repository: " CHOICE
-if [[ ! "$CHOICE" =~ ^[0-9]+$ ]] || (( CHOICE < 1 || CHOICE > ${#REPOS[@]} )); then
-    echo "❌ Invalid selection."
-    exit 1
-fi
-
-# Get the selected repo
-REPO_DIR="${REPOS[$((CHOICE-1))]}"
-
-echo "🔄 Navigating to repo: $REPO_DIR"
-cd "$REPO_DIR" || { echo "❌ Failed to find repo"; exit 1; }
-
-echo "🔄 Fetching latest changes from GitHub..."
-git fetch origin "$BRANCH"
-
-# Check for local changes
-if ! git diff --quiet || ! git diff --staged --quiet; then
-    echo "💾 Stashing local changes..."
-    git stash
-    STASHED=true
-else
-    STASHED=false
-fi
-
-echo "📥 Pulling latest changes from GitHub..."
-if git pull origin "$BRANCH" --rebase; then
-    echo "✅ Successfully pulled latest changes."
-else
-    echo "⚠️ Merge conflict detected! Manually resolve and re-run the script."
-    exit 1
-fi
-
-# If we stashed local changes, apply them back
-if [ "$STASHED" = true ]; then
-    echo "♻️ Applying stashed local changes..."
-    git stash pop || echo "⚠️ No stashed changes to apply."
-fi
-
-# Stage and commit if there are changes
-if ! git diff --quiet || ! git diff --staged --quiet; then
-    echo "📌 Staging changes..."
-    git add .
-
-    echo "📝 Committing changes..."
-    git commit -m "Auto-sync from CN: $(date '+%Y-%m-%d %H:%M:%S')"
-
-    echo "🚀 Pushing changes to GitHub..."
-    git push origin "$BRANCH"
-
-    echo "✅ Sync completed successfully!"
-else
-    echo "⚡ No new changes to commit."
-fi
-#
