@@ -4,7 +4,7 @@
 
 ## Overview
 
-**github-sync.sh** is a simple yet powerful Bash script designed to streamline the synchronization of Git repositories located under the `~/scripts` directory. This script automates the process of fetching, stashing, pulling, and pushing changes to GitHub, ensuring that your local and remote repositories remain up to date with minimal effort.
+**github-sync.sh** is a simple yet powerful Bash script designed to streamline the synchronization of Git repositories located under the `~/scripts` directory. This script automates the process of fetching, stashing, pulling, and pushing changes to GitHub, ensuring that your local and remote repositories remain up to date.
 
 ## Features
 
