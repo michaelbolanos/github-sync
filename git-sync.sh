@@ -56,7 +56,7 @@ select_and_sync_repos() {
     done
 }
 
-# Function to clone repos
+# Function to clone repos manually
 clone_repos() {
     echo "Enter SSH clone URLs (one per line). Enter a blank line to finish:"
     while true; do
@@ -64,6 +64,43 @@ clone_repos() {
         [ -z "$repo_url" ] && break
         repo_name=$(basename "$repo_url" .git)
         git clone "$repo_url" "$SYNC_DIR/$repo_name" | tee -a "$LOG_FILE"
+    done
+}
+
+# Function to clone repos using GitHub API
+clone_from_github_account() {
+    echo "Enter your GitHub username:"
+    read -r github_user
+    echo "Enter your GitHub personal access token (hidden):"
+    read -rs github_token
+    echo
+
+    echo "Fetching repositories for user $github_user..." | tee -a "$LOG_FILE"
+    repos=$(curl -s -u "$github_user:$github_token" https://api.github.com/user/repos?per_page=100 | grep ssh_url | cut -d '"' -f 4)
+
+    if [ -z "$repos" ]; then
+        echo "No repositories found or authentication failed." | tee -a "$LOG_FILE"
+        return
+    fi
+
+    echo "Select repositories to clone (space-separated numbers):"
+    i=1
+    urls=()
+    for url in $repos; do
+        echo "$i) $url"
+        urls+=("$url")
+        ((i++))
+    done
+
+    read -r selection
+    for index in $selection; do
+        if [[ $index =~ ^[0-9]+$ ]] && [ $index -le ${#urls[@]} ]; then
+            url="${urls[$((index-1))]}"
+            repo_name=$(basename "$url" .git)
+            git clone "$url" "$SYNC_DIR/$repo_name" | tee -a "$LOG_FILE"
+        else
+            echo "Invalid selection: $index"
+        fi
     done
 }
 
@@ -95,7 +132,7 @@ check_github_access
 
 # Interactive menu
 echo "Select an option:"
-options=("Sync All" "Sync Selected Repos" "Sync One Repo" "Clone Repos from GitHub" "View Log" "Exit")
+options=("Sync All" "Sync Selected Repos" "Sync One Repo" "Clone Repos Manually" "Clone Repos from GitHub Account" "View Log" "Exit")
 select opt in "${options[@]}"; do
     case $opt in
         "Sync All")
@@ -109,8 +146,11 @@ select opt in "${options[@]}"; do
             read -r repo_path
             sync_repo "$repo_path"
             ;;
-        "Clone Repos from GitHub")
+        "Clone Repos Manually")
             clone_repos
+            ;;
+        "Clone Repos from GitHub Account")
+            clone_from_github_account
             ;;
         "View Log")
             cat "$LOG_FILE"
