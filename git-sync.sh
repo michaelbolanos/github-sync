@@ -83,7 +83,7 @@ clone_from_github_account() {
         return
     fi
 
-    echo "Select repositories to clone (space-separated numbers):"
+    echo "Select repositories to clone and sync (space-separated numbers):"
     i=1
     urls=()
     for url in $repos; do
@@ -97,7 +97,9 @@ clone_from_github_account() {
         if [[ $index =~ ^[0-9]+$ ]] && [ $index -le ${#urls[@]} ]; then
             url="${urls[$((index-1))]}"
             repo_name=$(basename "$url" .git)
-            git clone "$url" "$SYNC_DIR/$repo_name" | tee -a "$LOG_FILE"
+            target_dir="$SYNC_DIR/$repo_name"
+            git clone "$url" "$target_dir" | tee -a "$LOG_FILE"
+            sync_repo "$target_dir"
         else
             echo "Invalid selection: $index"
         fi
