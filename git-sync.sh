@@ -36,13 +36,28 @@ sync_all_repos() {
 # Function to check if SSH key exists
 check_ssh_key() {
     if [ ! -f "$HOME/.ssh/id_rsa" ]; then
-        echo "No SSH key found! Set up SSH for GitHub first." | tee -a "$LOG_FILE"
-        exit 1
+        echo "No SSH key found. Generating one..." | tee -a "$LOG_FILE"
+        ssh-keygen -t rsa -b 4096 -C "your_email@example.com" -f "$HOME/.ssh/id_rsa" -N "" | tee -a "$LOG_FILE"
+        eval "$(ssh-agent -s)"
+        ssh-add "$HOME/.ssh/id_rsa"
+        echo "SSH key generated. Add the following public key to your GitHub account:" | tee -a "$LOG_FILE"
+        cat "$HOME/.ssh/id_rsa.pub"
+        read -p "Press Enter after adding the key to GitHub..."
     fi
 }
 
-# Run SSH key check first
+# Function to test SSH connection to GitHub
+check_github_access() {
+    echo "Testing SSH connection to GitHub..." | tee -a "$LOG_FILE"
+    ssh -T git@github.com 2>&1 | tee -a "$LOG_FILE" | grep -q "successfully authenticated" || {
+        echo "SSH connection to GitHub failed! Check your SSH setup." | tee -a "$LOG_FILE"
+        exit 1
+    }
+}
+
+# Run setup and checks
 check_ssh_key
+check_github_access
 
 # Interactive menu
 echo "Select an option:"
