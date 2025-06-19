@@ -28,20 +28,41 @@
 
 ## First-Time Setup (SSH + Token)
 
-### 🔑 1. Generate an SSH Key (script does this if missing)
+### 🔑 1. Generate an SSH Key
+
+#### ⚙️ Default (RSA):
+The script auto-generates this if no key is found:
 ```bash
 ssh-keygen -t rsa -b 4096 -C "you@example.com"
 ```
+
+#### 🔐 Modern Option (ECDSA):
+For a smaller, faster, modern key:
+```bash
+ssh-keygen -t ecdsa -b 521 -C "you@example.com" -f ~/.ssh/id_ecdsa
+```
+
+Then add it to your ssh-agent:
+```bash
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ecdsa
+```
+
+Update your GitHub SSH key accordingly.
+
+---
 
 ### 🔗 2. Add SSH Key to GitHub
 
 Copy your public key:
 ```bash
-cat ~/.ssh/id_rsa.pub
+cat ~/.ssh/id_rsa.pub   # or id_ecdsa.pub if using ECDSA
 ```
 
 Then go to: [https://github.com/settings/keys](https://github.com/settings/keys)  
 Click **New SSH key**, paste it in, and save.
+
+---
 
 ### 🔐 3. Create GitHub Personal Access Token (for API)
 
