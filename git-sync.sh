@@ -2,9 +2,9 @@
 # Enhanced GitHub Sync Script
 # Automates Git repository synchronization with logging, error handling, and batch processing
 
-LOG_FILE=~/scripts/github-sync.log
-BACKUP_DIR=~/scripts/backups
-SYNC_DIR=~/scripts
+LOG_FILE="$HOME/scripts/github-sync.log"
+BACKUP_DIR="$HOME/scripts/backups"
+SYNC_DIR="$HOME/scripts"
 
 # Ensure backup directory exists
 mkdir -p "$BACKUP_DIR"
@@ -14,7 +14,7 @@ sync_repo() {
     local repo_dir=$1
     cd "$repo_dir" || return
     echo "Syncing $repo_dir..." | tee -a "$LOG_FILE"
-    tar -czf "$BACKUP_DIR/$(basename $repo_dir)-backup-$(date +%F).tar.gz" .
+    tar -czf "$BACKUP_DIR/$(basename "$repo_dir")-backup-$(date +%F).tar.gz" .
     git fetch --all 2>&1 | tee -a "$LOG_FILE"
     git stash 2>&1 | tee -a "$LOG_FILE"
     git pull --rebase 2>&1 | tee -a "$LOG_FILE"
@@ -35,11 +35,14 @@ sync_all_repos() {
 
 # Function to check if SSH key exists
 check_ssh_key() {
-    if [ ! -f ~/.ssh/id_rsa ]; then
+    if [ ! -f "$HOME/.ssh/id_rsa" ]; then
         echo "No SSH key found! Set up SSH for GitHub first." | tee -a "$LOG_FILE"
         exit 1
     fi
 }
+
+# Run SSH key check first
+check_ssh_key
 
 # Interactive menu
 echo "Select an option:"
