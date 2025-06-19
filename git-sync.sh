@@ -33,6 +33,40 @@ sync_all_repos() {
     done
 }
 
+# Function to select repos to sync
+select_and_sync_repos() {
+    echo "Available repositories:"
+    repos=()
+    i=1
+    for repo in "$SYNC_DIR"/*/.git; do
+        repo_dir=$(dirname "$repo")
+        echo "$i) $(basename "$repo_dir")"
+        repos+=("$repo_dir")
+        ((i++))
+    done
+
+    echo "Enter the numbers of the repos to sync (space-separated):"
+    read -r selected
+    for index in $selected; do
+        if [[ $index =~ ^[0-9]+$ ]] && [ $index -le ${#repos[@]} ]; then
+            sync_repo "${repos[$((index-1))]}"
+        else
+            echo "Invalid selection: $index"
+        fi
+    done
+}
+
+# Function to clone repos
+clone_repos() {
+    echo "Enter SSH clone URLs (one per line). Enter a blank line to finish:"
+    while true; do
+        read -r repo_url
+        [ -z "$repo_url" ] && break
+        repo_name=$(basename "$repo_url" .git)
+        git clone "$repo_url" "$SYNC_DIR/$repo_name" | tee -a "$LOG_FILE"
+    done
+}
+
 # Function to check if SSH key exists
 check_ssh_key() {
     if [ ! -f "$HOME/.ssh/id_rsa" ]; then
@@ -61,16 +95,22 @@ check_github_access
 
 # Interactive menu
 echo "Select an option:"
-options=("Sync All" "Sync One Repo" "View Log" "Exit")
+options=("Sync All" "Sync Selected Repos" "Sync One Repo" "Clone Repos from GitHub" "View Log" "Exit")
 select opt in "${options[@]}"; do
     case $opt in
         "Sync All")
             sync_all_repos
             ;;
+        "Sync Selected Repos")
+            select_and_sync_repos
+            ;;
         "Sync One Repo")
             echo "Enter repository path:"
             read -r repo_path
             sync_repo "$repo_path"
+            ;;
+        "Clone Repos from GitHub")
+            clone_repos
             ;;
         "View Log")
             cat "$LOG_FILE"
