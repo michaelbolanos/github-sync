@@ -2,31 +2,57 @@
 
 ## Overview
 
-`github-sync.sh` is a powerful and interactive Bash script designed to manage and synchronize Git repositories under your `~/scripts` directory. It offers smart automation for cloning, syncing, stashing, committing, pushing, and even setting up your GitHub SSH credentials. The script provides a menu-driven interface with color-coded output and alerts, making it user-friendly and efficient for developers and sysadmins.
+`github-sync.sh` is a powerful and interactive Bash script that automates syncing and managing Git repositories under your `~/scripts` directory. It helps you stay in sync with GitHub through SSH authentication, GitHub API integration, and an interactive menu.
 
 ---
 
 ## Features
 
-- ✅ **Auto SSH Setup** – Generates and installs SSH keys if missing, then checks access.
-- 🔁 **Auto-Sync Repos** – Scans `~/scripts` and automatically syncs all Git repos.
-- 🎯 **Interactive Menu** – Lets you sync all, selected, or single repos.
-- 🌐 **GitHub Integration** – Uses GitHub API to list and clone all repos in your account.
-- 🔒 **SSH-Based Git Pull/Push** – Operates securely with your GitHub SSH key.
-- 💾 **Auto Backup** – Creates a `.tar.gz` backup before each sync.
-- 🧠 **Conflict Detection** – Alerts if a merge conflict occurs.
-- 🧹 **Error Handling** – Gives clear messages and log feedback.
-- 🎨 **Color Output + Alerts** – Highlights statuses and plays terminal sound on completion.
-- 📜 **Detailed Logging** – Outputs all actions to `~/scripts/github-sync.log`.
+- ✅ **SSH Key Setup** – Generates an SSH key if missing and prompts you to add it to GitHub.
+- 🔁 **Auto-Sync Repos** – Automatically fetches, stashes, pulls, commits, and pushes repos.
+- 🌐 **GitHub API Integration** – Uses your GitHub token to fetch and clone all your repos.
+- 📦 **Auto Backup** – Archives each repo before syncing.
+- 🎨 **Color UI + Alerts** – Color-coded output with terminal sound notifications.
+- 🔍 **Interactive Menu** – Sync all, selected, or one repo; clone manually or via API.
+- 📜 **Logging** – All actions logged to `~/scripts/github-sync.log`.
 
 ---
 
 ## Prerequisites
 
-- ✅ Linux or macOS with Bash
-- ✅ Git installed
-- ✅ SSH access to GitHub (script sets this up if needed)
-- ✅ `curl` for API access
+- ✅ Linux/macOS terminal with Bash
+- ✅ `git`, `curl`, and `ssh` installed
+- ✅ GitHub account
+
+---
+
+## First-Time Setup (SSH + Token)
+
+### 🔑 1. Generate an SSH Key (script does this if missing)
+```bash
+ssh-keygen -t rsa -b 4096 -C "you@example.com"
+```
+
+### 🔗 2. Add SSH Key to GitHub
+
+Copy your public key:
+```bash
+cat ~/.ssh/id_rsa.pub
+```
+
+Then go to: [https://github.com/settings/keys](https://github.com/settings/keys)  
+Click **New SSH key**, paste it in, and save.
+
+### 🔐 3. Create GitHub Personal Access Token (for API)
+
+Go to: [https://github.com/settings/tokens](https://github.com/settings/tokens)
+
+Click **Generate new token (classic)**  
+✅ Select scopes:
+- `repo`
+- `read:user`
+
+Copy the token (you’ll need it for the script's "Clone from GitHub Account" option).
 
 ---
 
@@ -38,7 +64,7 @@ cd github-sync
 chmod +x github-sync.sh
 ```
 
-Optional (run script globally):
+Optional (run globally):
 
 ```bash
 sudo mv github-sync.sh /usr/local/bin/github-sync
@@ -62,37 +88,25 @@ github-sync
 
 ## Menu Options
 
-1. **Sync All** – Auto syncs all Git repos in `~/scripts`
-2. **Sync Selected Repos** – Choose which ones to sync
-3. **Sync One Repo** – Provide one path manually
-4. **Clone Repos Manually** – Paste SSH URLs to clone
-5. **Clone from GitHub Account** – Auto fetch + sync all your GitHub repos
-6. **View Log** – View full sync history
-7. **Exit** – Quit the script
-
----
-
-## GitHub Access Token
-
-For Option 5, generate a token here:  
-👉 [https://github.com/settings/tokens](https://github.com/settings/tokens)
-
-Select scopes:
-- `repo`
-- `read:user`
+1. **Sync All** – Sync all repos in `~/scripts`
+2. **Sync Selected Repos** – Pick specific ones to sync
+3. **Sync One Repo** – Enter a path manually
+4. **Clone Repos Manually** – Paste SSH URLs one by one
+5. **Clone from GitHub Account** – Enter GitHub username and token to clone and sync all repos
+6. **View Log** – Show sync logs
+7. **Exit** – Exit script
 
 ---
 
 ## Merge Conflict Handling
 
-If a conflict occurs:
+If you see:
 
 ```
 ⚠️ Merge conflict detected! Resolve manually and re-run the script.
 ```
 
-Fix using:
-
+Run:
 ```bash
 git status
 git mergetool
@@ -105,12 +119,12 @@ Then re-run the script.
 
 ## License
 
-MIT License – see the LICENSE file.
+MIT License – see `LICENSE`.
 
 ---
 
 ## Contributions
 
-Fork and submit pull requests anytime. Suggestions and improvements are welcome!
+Fork the repo, suggest changes, and submit PRs.
 
 ---
