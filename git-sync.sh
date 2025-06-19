@@ -6,15 +6,16 @@ LOG_FILE="$HOME/scripts/github-sync.log"
 BACKUP_DIR="$HOME/scripts/backups"
 SYNC_DIR="$HOME/scripts"
 
+# Create necessary directories if they don't exist
+mkdir -p "$BACKUP_DIR"
+mkdir -p "$SYNC_DIR"
+
 # Enable colored output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
-
-# Ensure backup directory exists
-mkdir -p "$BACKUP_DIR"
 
 # Function to play alert sound
 beep() {
@@ -25,6 +26,11 @@ beep() {
 sync_repo() {
     local repo_dir=$1
     cd "$repo_dir" || return
+
+    if ! git diff --quiet || ! git diff --cached --quiet; then
+        echo -e "${YELLOW}⚠️  Uncommitted changes in $repo_dir${NC}"
+    fi
+
     echo -e "${BLUE}Syncing $repo_dir...${NC}" | tee -a "$LOG_FILE"
     tar -czf "$BACKUP_DIR/$(basename "$repo_dir")-backup-$(date +%F).tar.gz" .
     git fetch --all 2>&1 | tee -a "$LOG_FILE"
@@ -92,9 +98,16 @@ clone_repos() {
 clone_from_github_account() {
     echo "Enter your GitHub username:"
     read -r github_user
-    echo "Enter your GitHub personal access token (hidden):"
-    read -rs github_token
-    echo
+
+    if [ -f "$HOME/.github-sync-token" ]; then
+        github_token=$(cat "$HOME/.github-sync-token")
+    else
+        echo "Enter your GitHub personal access token (hidden):"
+        read -rs github_token
+        echo
+        echo "$github_token" > "$HOME/.github-sync-token"
+        chmod 600 "$HOME/.github-sync-token"
+    fi
 
     echo "Fetching repositories for user $github_user..." | tee -a "$LOG_FILE"
     repos=$(curl -s -u "$github_user:$github_token" https://api.github.com/user/repos?per_page=100 | grep ssh_url | cut -d '"' -f 4)
@@ -147,6 +160,18 @@ check_github_access() {
 check_ssh_key
 check_github_access
 
+# Parse arguments
+if [[ $1 == "--force" ]]; then
+    sync_all_repos
+    exit 0
+elif [[ $1 == "--dry-run" ]]; then
+    echo "Dry run: would sync the following repos:"
+    for repo in "$SYNC_DIR"/*/.git; do
+        echo "- $(dirname "$repo")"
+    done
+    exit 0
+fi
+
 # Interactive menu
 while true; do
     echo -e "\n${YELLOW}Select an option:${NC}"
@@ -194,5 +219,4 @@ while true; do
                 ;;
         esac
     done
-
 done
