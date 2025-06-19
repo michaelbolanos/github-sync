@@ -1,91 +1,116 @@
-# GitHub Sync
-
-![GitHub Sync](https://img.shields.io/badge/version-1.0-blue.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg)
+# GitHub Sync Script
 
 ## Overview
 
-**github-sync.sh**  a simple yet powerful Bash script designed to streamline the synchronization of Git repositories located under the `~/scripts` directory. This script automates the process of fetching, stashing, pulling, and pushing changes to GitHub, ensuring that local and remote repositories remain up to date.
+`github-sync.sh` is a powerful and interactive Bash script designed to manage and synchronize Git repositories under your `~/scripts` directory. It offers smart automation for cloning, syncing, stashing, committing, pushing, and even setting up your GitHub SSH credentials. The script provides a menu-driven interface with color-coded output and alerts, making it user-friendly and efficient for developers and sysadmins.
+
+---
 
 ## Features
 
-- **Automatic Repository Discovery:** Scans the specified directory for Git repositories.
-- **Interactive Selection with Timeout:** Prompts the user to select a repository within 14 seconds, defaulting to `~/scripts`.
-- **Automated Syncing:** Fetches the latest changes, handles stashing of local modifications, and rebases changes from GitHub.
-- **Conflict Handling:** Detects merge conflicts and prompts the user to resolve them manually.
-- **Auto-Commit & Push:** Stages and commits any new changes before pushing them to the remote repository.
-- **Error Handling:** Provides meaningful feedback in case of invalid selections or Git errors.
+- ✅ **Auto SSH Setup** – Generates and installs SSH keys if missing, then checks access.
+- 🔁 **Auto-Sync Repos** – Scans `~/scripts` and automatically syncs all Git repos.
+- 🎯 **Interactive Menu** – Lets you sync all, selected, or single repos.
+- 🌐 **GitHub Integration** – Uses GitHub API to list and clone all repos in your account.
+- 🔒 **SSH-Based Git Pull/Push** – Operates securely with your GitHub SSH key.
+- 💾 **Auto Backup** – Creates a `.tar.gz` backup before each sync.
+- 🧠 **Conflict Detection** – Alerts if a merge conflict occurs.
+- 🧹 **Error Handling** – Gives clear messages and log feedback.
+- 🎨 **Color Output + Alerts** – Highlights statuses and plays terminal sound on completion.
+- 📜 **Detailed Logging** – Outputs all actions to `~/scripts/github-sync.log`.
+
+---
 
 ## Prerequisites
 
-Ensure you have the following installed on your system:
+- ✅ Linux or macOS with Bash
+- ✅ Git installed
+- ✅ SSH access to GitHub (script sets this up if needed)
+- ✅ `curl` for API access
 
-- **Linux/macOS** (Compatible Bash environment)
-- **Git** (Ensure you have SSH authentication set up for GitHub)
+---
 
 ## Installation
 
-1. **Clone the Repository:**
-   ```bash
-   git clone git@github.com:michaelbolanos/github-sync.git
-   ```
-2. **Make the Script Executable:**
-   ```bash
-   chmod +x github-sync.sh
-   ```
-3. **Move to a Global Location (Optional):**
-   ```bash
-   sudo mv github-sync.sh /usr/local/bin/github-sync
-   ```
-   Now you can run it from anywhere using:
-   ```bash
-   github-sync
-   ```
+```bash
+git clone git@github.com:michaelbolanos/github-sync.git
+cd github-sync
+chmod +x github-sync.sh
+```
+
+Optional (run script globally):
+
+```bash
+sudo mv github-sync.sh /usr/local/bin/github-sync
+```
+
+---
 
 ## Usage
 
-Run the script with:
 ```bash
 ./github-sync.sh
 ```
-or if installed globally:
+
+Or globally:
+
 ```bash
 github-sync
 ```
 
-### Step-by-Step Execution:
-1. **Select a directory** (defaults to `~/scripts` if no input is provided within 14 seconds).
-2. **Choose a repository** from the detected list.
-3. **Sync process starts**:
-   - Fetches the latest changes from the remote repository.
-   - Detects and stashes any local modifications.
-   - Rebases with the latest remote changes.
-   - Re-applies stashed changes (if applicable).
-   - Stages, commits, and pushes any new local changes.
-4. **Completion message** confirming a successful sync or warning of conflicts if they arise.
+---
 
-## Handling Merge Conflicts
+## Menu Options
 
-If a merge conflict occurs, the script will notify you:
+1. **Sync All** – Auto syncs all Git repos in `~/scripts`
+2. **Sync Selected Repos** – Choose which ones to sync
+3. **Sync One Repo** – Provide one path manually
+4. **Clone Repos Manually** – Paste SSH URLs to clone
+5. **Clone from GitHub Account** – Auto fetch + sync all your GitHub repos
+6. **View Log** – View full sync history
+7. **Exit** – Quit the script
 
-```bash
-⚠️ Merge conflict detected! Manually resolve and re-run the script.
+---
+
+## GitHub Access Token
+
+For Option 5, generate a token here:  
+👉 [https://github.com/settings/tokens](https://github.com/settings/tokens)
+
+Select scopes:
+- `repo`
+- `read:user`
+
+---
+
+## Merge Conflict Handling
+
+If a conflict occurs:
+
 ```
-Resolve conflicts manually using:
+⚠️ Merge conflict detected! Resolve manually and re-run the script.
+```
+
+Fix using:
+
 ```bash
 git status
 git mergetool
 git rebase --continue
 ```
-Once resolved, re-run the script to complete the sync process.
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contributions
-
-Contributions are welcome.  Feel free to fork the repo and submit pull requests.
+Then re-run the script.
 
 ---
 
+## License
 
+MIT License – see the LICENSE file.
+
+---
+
+## Contributions
+
+Fork and submit pull requests anytime. Suggestions and improvements are welcome!
+
+---
